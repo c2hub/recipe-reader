@@ -1,0 +1,15 @@
+hard_tabs = true
+reorder_imported_names = true
+where_layout = "HorizontalVertical"
+wrap_comments = true
+fn_call_width = 50
+fn_call_style = "Block"
+fn_args_layout = "Block"
+array_layout = "Block"
+chain_one_line_max = 50
+comment_width = 60
+fn_args_paren_newline = false
+fn_single_line = true
+control_brace_style = "AlwaysNextLine"
+fn_brace_style = "AlwaysNextLine"
+item_brace_style = "AlwaysNextLine"

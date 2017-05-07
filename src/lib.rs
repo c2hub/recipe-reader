@@ -5,7 +5,7 @@ use std::io::*;
 use std::env::{current_dir, set_current_dir};
 
 /*
-** Test
+** Tests
 */
 
 #[cfg(test)]
@@ -13,6 +13,19 @@ mod tests {
 	use std::fs::{File, remove_file};
 	use std::path::Path;
 	use super::*;
+
+	macro_rules! recipe_test
+	{
+		($name:expr) =>
+		({
+			let mut f = File::open(Path::new($name)).unwrap();
+			let mut recf = File::create(Path::new("recipe.txt")).unwrap();
+			let mut contents: String = String::new();
+			let _ = f.read_to_string(&mut contents);
+			write!(recf, "{}", contents);
+		});
+	}
+
 	#[test]
 	fn find_fail()
 	{
@@ -29,15 +42,9 @@ mod tests {
 	#[test]
 	fn basic_parse()
 	{
-		let mut f = File::create(Path::new("recipe.txt")).unwrap();
+		recipe_test!("tests/basic_parse");
+
 		let mut rec: Recipe = Recipe::new();
-
-		let _ = write!(f, "{}", 
-			  "executable test\n".to_string()
-			+ "    file.c2\n"
-			+ "end\n"
-		);
-
 		rec.read_errors(true);
 		assert_eq!(rec.ok, true);
 		assert_eq!(rec.targets[0].name, "test".to_string());
@@ -187,6 +194,7 @@ impl Recipe
 		for line in contents.lines()
 		{
 			line_number += 1;
+			if line.starts_with("#") { continue; }
 			let mut tokens = line.split_whitespace();
 			match state
 			{
@@ -207,6 +215,17 @@ impl Recipe
 									return;
 								}
 							};
+
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
 							state = ReadState::InsideTarget;
 						}
 						"lib" =>

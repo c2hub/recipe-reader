@@ -12,9 +12,11 @@ use std::env::{current_dir, set_current_dir};
 mod tests {
 	use std::fs::{File, remove_file};
 	use std::path::Path;
+	use super::*;
 	#[test]
 	fn find_fail()
 	{
+		let _  = remove_file(Path::new("recipe.txt"));
 		assert_eq!(super::Recipe::find(), None);
 	}
 	#[test]
@@ -24,12 +26,32 @@ mod tests {
 		assert_ne!(super::Recipe::find(), None);
 		let _ = remove_file(Path::new("recipe.txt"));
 	}
+	#[test]
+	fn basic_parse()
+	{
+		let mut f = File::create(Path::new("recipe.txt")).unwrap();
+		let mut rec: Recipe = Recipe::new();
+
+		let _ = write!(f, "{}", 
+			  "executable test\n".to_string()
+			+ "    file.c2\n"
+			+ "end\n"
+		);
+
+		rec.read_errors(true);
+		assert_eq!(rec.ok, true);
+		assert_eq!(rec.targets[0].name, "test".to_string());
+		assert_eq!(rec.targets[0].kind, TargetType::Executable);
+		assert_eq!(rec.targets[0].files.len(), 1);
+		let _ = remove_file(Path::new("recipe.txt"));
+	}
 }
 
 /*
 ** Types
 */
 
+#[derive(Debug)]
 pub struct Recipe
 {
 	pub ok: bool,
@@ -38,7 +60,7 @@ pub struct Recipe
 	pub targets: Vec<Target>
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Target
 {
 	pub name: String,
@@ -47,7 +69,7 @@ pub struct Target
 	pub options: TargetOptions,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum TargetType
 {
 	SharedLib,
@@ -56,7 +78,7 @@ pub enum TargetType
 	Temporary, //used during declaration
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Use
 {
 	Static,
@@ -69,7 +91,7 @@ pub enum ReadState
 	InsideTarget,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct TargetOptions
 {
 	pub deps: bool,
@@ -298,7 +320,6 @@ impl Recipe
 				}
 			}
 		}
-
 		self.ok = true;
 	}
 

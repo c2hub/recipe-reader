@@ -173,6 +173,7 @@ impl Recipe
 								}
 							};
 
+							//check for extra tokens
 							match tokens.next()
 							{
 								Some(s) =>
@@ -217,6 +218,18 @@ impl Recipe
 									return ;
 								}
 							};
+
+							//check for extra tokens
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
 							state = ReadState::InsideTarget;
 						}
 						x =>

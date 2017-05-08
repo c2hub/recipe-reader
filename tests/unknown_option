@@ -1,0 +1,4 @@
+executable test
+	$unknown
+	file.c2
+end

@@ -10,7 +10,6 @@ macro_rules! recipe_prep
 {
 	($name:expr) =>
 	({
-		std::sync::
 		let _ = remove_file(Path::new("recipe.txt"));
 		let mut f = File::open(Path::new($name)).unwrap();
 		let mut recf = File::create(Path::new("recipe.txt")).unwrap();
@@ -82,5 +81,19 @@ fn executable_start_extra_token()
 fn library_start_extra_token()
 {
 	recipe_prep!("tests/library_start_extra_token");
+	not_ok_test!();
+}
+
+#[test]
+fn library_unknown_type()
+{
+	recipe_prep!("tests/library_unknown_type");
+	not_ok_test!();
+}
+
+#[test]
+fn unknown_option()
+{
+	recipe_prep!("tests/unknown_option");
 	not_ok_test!();
 }

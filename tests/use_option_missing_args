@@ -1,0 +1,4 @@
+executable test
+	$use
+	file.c2
+end

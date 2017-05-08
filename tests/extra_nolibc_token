@@ -1,0 +1,4 @@
+executable test
+	$nolibc potato
+	file.c2
+end

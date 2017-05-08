@@ -245,12 +245,104 @@ impl Recipe
 				{
 					Some(s) => match s
 					{
-						"end" => { self.targets.push(target.clone()); target = Target::new(); state = ReadState::Start; },
-						"$refs" => target.options.refs = true,
-						"$deps" => target.options.deps = true,
-						"$nolibc" => target.options.nolibc = true,
-						"$generate_ir" => target.options.generate_ir = true,
-						"$generate_c" => target.options.generate_c = true,
+						"end" =>
+						{ 
+							self.targets.push(target.clone());
+							target = Target::new();
+							state = ReadState::Start; 
+
+							//check for extra tokens
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
+						},
+						"$refs" =>
+						{
+							target.options.refs = true;
+
+							//check for extra tokens
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
+						}
+						"$deps" =>
+						{
+							target.options.deps = true;
+						
+							//check for extra tokens
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
+						}
+						"$nolibc" =>
+						{
+							target.options.nolibc = true;
+
+							//check for extra tokens
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
+						}
+						"$generate_ir" => 
+						{ 
+							target.options.generate_ir = true;
+
+							//check for extra tokens
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
+						}
+						"$generate_c" =>
+						{
+							target.options.generate_c = true;
+							
+							//check for extra tokens
+							match tokens.next()
+							{
+								Some(s) =>
+								{
+									if errors
+										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+									return;
+								},
+								None => {},
+							}
+						}
 						"$warnings" => loop
 						{
 							match tokens.next() { Some(p) => target.options.warnings.push(p.to_string()), 

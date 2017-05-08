@@ -97,3 +97,24 @@ fn unknown_option()
 	recipe_prep!("tests/unknown_option");
 	not_ok_test!();
 }
+
+#[test]
+fn extra_nolibc_token()
+{
+	recipe_prep!("tests/extra_nolibc_token");
+	not_ok_test!();
+}
+
+#[test]
+fn use_option_missing_args()
+{
+	recipe_prep!("tests/use_option_missing_args");
+	not_ok_test!();
+}
+
+#[test]
+fn missing_target_name()
+{
+	recipe_prep!("tests/missing_target_name");
+	not_ok_test!();
+}

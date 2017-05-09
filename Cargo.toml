@@ -2,5 +2,8 @@
 name = "recipe-reader"
 version = "0.9.5"
 authors = ["Lukáš Hozda <luk.hozda@gmail.com>"]
+description = "A reader for recipe files of the C2 language. c2lang.org"
+license = " Fair"
+homepage = "http://github.com/c2hub/recipe-reader"
 
 [dependencies]

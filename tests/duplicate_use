@@ -1,0 +1,5 @@
+executable test
+	$use potato static
+	$use potato static
+	file.c2
+end

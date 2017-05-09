@@ -1,0 +1,4 @@
+executable test
+	file.c2
+	file.c2
+end

@@ -200,3 +200,22 @@ fn unknown_option()
 	recipe_prep!("tests/unknown_option");
 	not_ok_test!();
 }
+
+
+/*
+** duplicates
+*/
+
+#[test]
+fn duplicate_file()
+{
+	recipe_prep!("tests/duplicate_file");
+	not_ok_test!();
+}
+
+#[test]
+fn duplicate_use()
+{
+	recipe_prep!("tests/duplicate_use");
+	not_ok_test!();
+}

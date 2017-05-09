@@ -42,7 +42,7 @@ pub enum TargetType
 	Temporary, //used during declaration
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Use
 {
 	Static,
@@ -366,8 +366,28 @@ impl Recipe
 								{
 									Some(use_type) => match use_type
 									{
-										"static" => target.options.lib_use.push((name.to_string(), Use::Static)),
-										"dynamic" => target.options.lib_use.push((name.to_string(), Use::Dynamic)),
+										"static" => 
+										{
+											if !target.options.lib_use.contains(&(name.to_string(), Use::Static))
+												{target.options.lib_use.push((name.to_string(), Use::Static));}
+											else 
+											{
+												if errors
+													{println!("error: duplicate library use '{}' at line {}", name, line_number);}
+												return;
+											}
+										},
+										"dynamic" =>
+										{
+											if !target.options.lib_use.contains(&(name.to_string(), Use::Dynamic))
+												{target.options.lib_use.push((name.to_string(), Use::Dynamic));}
+											else 
+											{
+												if errors
+													{println!("error: duplicate library use '{}' at line {}", name, line_number);}
+												return;
+											}
+										},
 										x =>
 										{
 											if errors
@@ -390,11 +410,25 @@ impl Recipe
 								return;
 							}
 						},
-						x => if !x.starts_with('$') {target.files.push(x.to_string())} else
-						{
-							if errors
-								{println!("error: unknown option '{}' at line {}", x, line_number);}
-							return;
+						x =>
+						{ 
+							if !x.starts_with('$')
+							{
+								if !target.files.contains(&x.to_string())
+									{target.files.push(x.to_string());}
+								else 
+								{
+									if errors
+										{println!("error: duplicate file '{}' at line {}", x, line_number);}
+									return;
+								}
+							}
+							else
+							{
+								if errors
+									{println!("error: unknown option '{}' at line {}", x, line_number);}
+								return;
+							}
 						}
 					},
 					None => {}

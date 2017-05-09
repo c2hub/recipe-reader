@@ -8,6 +8,11 @@ use std::fs::{File, remove_file};
 use std::path::Path;
 use super::*;
 
+
+/*
+** macros
+*/
+
 macro_rules! recipe_prep
 {
 	($name:expr) =>
@@ -43,6 +48,10 @@ macro_rules! ok_test
 	});
 }
 
+/*
+** basic
+*/
+
 #[test]
 fn find_fail()
 {
@@ -73,53 +82,16 @@ fn basic_parse()
 }
 
 #[test]
-fn executable_start_extra_token()
+fn many_empty_lines()
 {
-	recipe_prep!("tests/executable_start_extra_token");
-	not_ok_test!();
+	recipe_prep!("tests/many_empty_lines");
+	ok_test!();
 }
 
-#[test]
-fn library_start_extra_token()
-{
-	recipe_prep!("tests/library_start_extra_token");
-	not_ok_test!();
-}
+/*
+** extra tokens
+*/
 
-#[test]
-fn library_unknown_type()
-{
-	recipe_prep!("tests/library_unknown_type");
-	not_ok_test!();
-}
-
-#[test]
-fn unknown_option()
-{
-	recipe_prep!("tests/unknown_option");
-	not_ok_test!();
-}
-
-#[test]
-fn extra_nolibc_token()
-{
-	recipe_prep!("tests/extra_nolibc_token");
-	not_ok_test!();
-}
-
-#[test]
-fn use_option_missing_args()
-{
-	recipe_prep!("tests/use_option_missing_args");
-	not_ok_test!();
-}
-
-#[test]
-fn missing_target_name()
-{
-	recipe_prep!("tests/missing_target_name");
-	not_ok_test!();
-}
 
 #[test]
 fn extra_deps_token()
@@ -157,11 +129,52 @@ fn extra_generate_c_token()
 }
 
 #[test]
-fn many_empty_lines()
+fn executable_start_extra_token()
 {
-	recipe_prep!("tests/many_empty_lines");
-	ok_test!();
+	recipe_prep!("tests/executable_start_extra_token");
+	not_ok_test!();
 }
+
+#[test]
+fn library_start_extra_token()
+{
+	recipe_prep!("tests/library_start_extra_token");
+	not_ok_test!();
+}
+
+#[test]
+fn library_unknown_type()
+{
+	recipe_prep!("tests/library_unknown_type");
+	not_ok_test!();
+}
+
+#[test]
+fn extra_nolibc_token()
+{
+	recipe_prep!("tests/extra_nolibc_token");
+	not_ok_test!();
+}
+
+/*
+** missing tokens
+*/
+
+#[test]
+fn use_option_missing_args()
+{
+	recipe_prep!("tests/use_option_missing_args");
+	not_ok_test!();
+}
+
+#[test]
+fn missing_target_name()
+{
+	recipe_prep!("tests/missing_target_name");
+	not_ok_test!();
+}
+
+
 
 #[test]
 fn config_more_than_one()
@@ -175,4 +188,15 @@ fn export_more_than_one()
 {
 	recipe_prep!("tests/export_more_than_one");
 	ok_test!();
+}
+
+/*
+** unknowns
+*/
+
+#[test]
+fn unknown_option()
+{
+	recipe_prep!("tests/unknown_option");
+	not_ok_test!();
 }

@@ -1,0 +1,4 @@
+executable test
+	$refs are awesome
+	file.c2
+end

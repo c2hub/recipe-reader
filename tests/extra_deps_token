@@ -1,0 +1,4 @@
+executable test
+	$deps are awesome
+	file.c2
+end

@@ -1,0 +1,4 @@
+executable test
+	$generate-c please
+	file.c2
+end

@@ -1,5 +1,7 @@
 /*
 ** Tests - test with 'cargo run -- --no-capture --test-threads 1'
+** -> all tests use the same recipe file, which is being replaced each time,
+** which means tests cause race conditions when run on multiple threads
 */
 
 use std::fs::{File, remove_file};
@@ -117,4 +119,60 @@ fn missing_target_name()
 {
 	recipe_prep!("tests/missing_target_name");
 	not_ok_test!();
+}
+
+#[test]
+fn extra_deps_token()
+{
+	recipe_prep!("tests/extra_deps_token");
+	not_ok_test!();
+}
+
+#[test]
+fn extra_end_token()
+{
+	recipe_prep!("tests/extra_end_token");
+	not_ok_test!();
+}
+
+#[test]
+fn extra_refs_token()
+{
+	recipe_prep!("tests/extra_refs_token");
+	not_ok_test!();
+}
+
+#[test]
+fn extra_generate_ir_token()
+{
+	recipe_prep!("tests/extra_generate_ir_token");
+	not_ok_test!();
+}
+
+#[test]
+fn extra_generate_c_token()
+{
+	recipe_prep!("tests/extra_generate_c_token");
+	not_ok_test!();
+}
+
+#[test]
+fn many_empty_lines()
+{
+	recipe_prep!("tests/many_empty_lines");
+	ok_test!();
+}
+
+#[test]
+fn config_more_than_one()
+{
+	recipe_prep!("tests/config_more_than_one");
+	ok_test!();
+}
+
+#[test]
+fn export_more_than_one()
+{
+	recipe_prep!("tests/export_more_than_one");
+	ok_test!();
 }

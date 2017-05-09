@@ -1,0 +1,4 @@
+executable test
+	$config sunshine lollipops rainbows unicorns
+	file.c2
+end

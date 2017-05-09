@@ -1,0 +1,4 @@
+executable test
+	$export one two three is this thing on
+	file.c2
+end

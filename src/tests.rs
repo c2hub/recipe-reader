@@ -5,7 +5,7 @@
 */
 
 use std::fs::{File, remove_file};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use super::*;
 
 
@@ -218,4 +218,87 @@ fn duplicate_use()
 {
 	recipe_prep!("tests/duplicate_use");
 	not_ok_test!();
+}
+
+//test with 'cargo test write_test -- --noceapture --ignored
+#[test] #[ignore]
+fn write_test()
+{
+	let rec = Recipe
+	{
+		ok: true,
+		path: PathBuf::from("recipe.txt"),
+		target_count: 2,
+		targets: vec!
+		[
+			Target
+			{
+				name: "potato".to_string(),
+				kind: TargetType::Executable,
+				files: vec!
+				[
+					"file1.c2".to_string(),
+					"file2.c2".to_string(),
+					"file3.c2".to_string(),
+					"file4.c2".to_string(),
+					"file5.c2".to_string(),
+					"file6.c2".to_string(),
+				],
+				options: TargetOptions
+				{
+					deps: false,
+					refs: true,
+					nolibc: false,
+					generate_c: true,
+					generate_ir: false,
+					lib_use: vec!
+					[
+						("pthread".to_string(), Use::Static),
+						("c2net".to_string(), Use::Dynamic),
+					],
+					export: Vec::new(),
+					config: Vec::new(),
+					warnings: vec!
+					[
+						"no_unused".to_string(),
+					]
+				}
+			},
+			Target
+			{
+				name: "tomato".to_string(),
+				kind: TargetType::StaticLib,
+				files: vec!
+				[
+					"file1.c2".to_string(),
+					"afile1.c2".to_string(),
+					"file2.c2".to_string(),
+					"afile2.c2".to_string(),
+					"file3.c2".to_string(),
+					"afile3.c2".to_string(),
+				],
+				options: TargetOptions
+				{
+					deps: true,
+					refs: false,
+					nolibc: true,
+					generate_c: false,
+					generate_ir: true,
+					lib_use: vec!
+					[
+						("pthread".to_string(), Use::Static),
+						("c2net".to_string(), Use::Dynamic),
+					],
+					export: Vec::new(),
+					config: Vec::new(),
+					warnings: vec!
+					[
+						"no_unused".to_string(),
+					]
+				}
+			}
+		],
+	};
+
+	rec.write();
 }

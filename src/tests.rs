@@ -175,7 +175,9 @@ fn missing_target_name()
 }
 
 
-
+/*
+** Ok tests
+*/
 #[test]
 fn config_more_than_one()
 {
@@ -201,6 +203,12 @@ fn unknown_option()
 	not_ok_test!();
 }
 
+#[test]
+fn unknown_target_type()
+{
+	recipe_prep!("tests/unknown_target_type");
+	not_ok_test!();
+}
 
 /*
 ** duplicates

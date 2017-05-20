@@ -122,7 +122,7 @@ impl Recipe
 		let mut path = cwd.as_path();
 		let mut recipe = path.join(Path::new("recipe.txt"));
 
-		loop 
+		loop
 		{
 			let recipe_f = File::open(&recipe);
 			if recipe_f.is_err()
@@ -139,7 +139,7 @@ impl Recipe
 			}
 			else
 			{
-				return Some(recipe.into_os_string().into_string().unwrap()); 
+				return Some(recipe.into_os_string().into_string().unwrap());
 			}
 		}
 	}
@@ -155,12 +155,12 @@ impl Recipe
 		self.ok = false;
 		self.path = match Recipe::find()
 		{
-			Some(p) => PathBuf::from(p), 
+			Some(p) => PathBuf::from(p),
 			None    =>
-			{	
+			{
 				if errors {println!("error: recipe file not found in current path")};
 				return;
-			} 
+			}
 		};
 		let mut recipe_file = match File::open(&self.path)
 		{
@@ -239,7 +239,7 @@ impl Recipe
 										if errors
 											{println!("error: uknown library type '{}' at line {}", x, line_number)}
 										return;
-									} 
+									}
 								},
 								None =>
 								{
@@ -276,7 +276,7 @@ impl Recipe
 					Some(s) => match s
 					{
 						"end" =>
-						{ 
+						{
 							self.targets.push(target.clone());
 							self.target_count += 1;
 							target = Target::new();
@@ -313,7 +313,7 @@ impl Recipe
 						"$deps" =>
 						{
 							target.options.deps = true;
-						
+
 							//check for extra tokens
 							match tokens.next()
 							{
@@ -342,8 +342,8 @@ impl Recipe
 								None => {},
 							}
 						}
-						"$generate_ir" => 
-						{ 
+						"$generate_ir" =>
+						{
 							target.options.generate_ir = true;
 
 							//check for extra tokens
@@ -361,7 +361,7 @@ impl Recipe
 						"$generate_c" =>
 						{
 							target.options.generate_c = true;
-							
+
 							//check for extra tokens
 							match tokens.next()
 							{
@@ -553,7 +553,7 @@ impl Target
 			kind: TargetType::Temporary,
 			files: Vec::new(),
 			options: TargetOptions::new()
-		} 
+		}
 	}
 }
 

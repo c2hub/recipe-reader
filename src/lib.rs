@@ -280,7 +280,7 @@ impl Recipe
 							self.targets.push(target.clone());
 							self.target_count += 1;
 							target = Target::new();
-							state = ReadState::Start; 
+							state = ReadState::Start;
 
 							//check for extra tokens
 							match tokens.next()
@@ -342,7 +342,7 @@ impl Recipe
 								None => {},
 							}
 						}
-						"$generate_ir" =>
+						"$generate-ir" =>
 						{
 							target.options.generate_ir = true;
 
@@ -358,7 +358,7 @@ impl Recipe
 								None => {},
 							}
 						}
-						"$generate_c" =>
+						"$generate-c" =>
 						{
 							target.options.generate_c = true;
 
@@ -397,11 +397,11 @@ impl Recipe
 								{
 									Some(use_type) => match use_type
 									{
-										"static" => 
+										"static" =>
 										{
 											if !target.options.lib_use.contains(&(name.to_string(), Use::Static))
 												{target.options.lib_use.push((name.to_string(), Use::Static));}
-											else 
+											else
 											{
 												if errors
 													{println!("error: duplicate library use '{}' at line {}", name, line_number);}
@@ -412,7 +412,7 @@ impl Recipe
 										{
 											if !target.options.lib_use.contains(&(name.to_string(), Use::Dynamic))
 												{target.options.lib_use.push((name.to_string(), Use::Dynamic));}
-											else 
+											else
 											{
 												if errors
 													{println!("error: duplicate library use '{}' at line {}", name, line_number);}
@@ -442,12 +442,12 @@ impl Recipe
 							}
 						},
 						x =>
-						{ 
+						{
 							if !x.starts_with('$')
 							{
 								if !target.files.contains(&x.to_string())
 									{target.files.push(x.to_string());}
-								else 
+								else
 								{
 									if errors
 										{println!("error: duplicate file '{}' at line {}", x, line_number);}
@@ -537,7 +537,7 @@ impl Recipe
 		}
 	}
 
-	fn chdir(&self)
+	pub fn chdir(&self)
 	{
 		set_current_dir(Path::new(&self.path));
 	}

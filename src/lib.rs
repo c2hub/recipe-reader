@@ -1,5 +1,6 @@
 #![allow(dead_code)]
-#![allow(unused_must_use)]
+#![allow(unknown_lints)]
+#![allow(cyclomatic_complexity)]
 use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::io::*;
@@ -16,7 +17,7 @@ mod tests;
 ** Types
 */
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Recipe
 {
 	pub ok: bool,
@@ -25,7 +26,7 @@ pub struct Recipe
 	pub targets: Vec<Target>
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Target
 {
 	pub name: String,
@@ -56,7 +57,7 @@ pub enum ReadState
 	InsideTarget,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct TargetOptions
 {
 	pub deps: bool,
@@ -79,14 +80,21 @@ impl ToString for TargetType
 {
 	fn to_string(&self) -> String
 	{
-		let ref me = *self;
-		match me
+		match *self
 		{
-			&TargetType::Executable => return "executable".to_string(),
-			&TargetType::SharedLib => return "shared".to_string(),
-			&TargetType::StaticLib => return "static".to_string(),
-			&TargetType::Temporary => panic!("temporary target type is not allowed to be stringified"),
+			TargetType::Executable => "executable".to_string(),
+			TargetType::SharedLib => "shared".to_string(),
+			TargetType::StaticLib => "static".to_string(),
+			TargetType::Temporary => panic!("temporary target type is not allowed to be stringified"),
 		}
+	}
+}
+
+impl Default for TargetType
+{
+	fn default() -> TargetType
+	{
+		TargetType::Temporary
 	}
 }
 
@@ -94,11 +102,10 @@ impl ToString for Use
 {
 	fn to_string(&self) -> String
 	{
-		let ref me = *self;
-		match me
+		match *self
 		{
-			&Use::Static => return "static".to_string(),
-			&Use::Dynamic => return "dynamic".to_string(),
+			Use::Static => "static".to_string(),
+			Use::Dynamic => "dynamic".to_string(),
 		}
 	}
 }
@@ -107,13 +114,9 @@ impl Recipe
 {
 	pub fn new() -> Recipe
 	{
-		Recipe
-		{
-			ok: true,
-			path: PathBuf::new(),
-			target_count: 0,
-			targets: Vec::new(),
-		}
+		let mut temp: Recipe = Default::default();
+		temp.ok = true;
+		temp
 	}
 
 	pub fn find() -> Option<String>
@@ -144,7 +147,6 @@ impl Recipe
 		}
 	}
 
-	//TODO
 	pub fn read(&mut self)
 	{
 		self.read_errors(false);
@@ -181,13 +183,13 @@ impl Recipe
 		for line in contents.lines()
 		{
 			line_number += 1;
-			if line.starts_with("#") { continue; }
+			if line.starts_with('#') { continue; }
 			let mut tokens = line.split_whitespace();
 			match state
 			{
-				ReadState::Start => match tokens.next()
+				ReadState::Start => if let Some(x) = tokens.next()
 				{
-					Some(x) => match x
+					match x
 					{
 						"executable" =>
 						{
@@ -204,15 +206,11 @@ impl Recipe
 							};
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 							state = ReadState::InsideTarget;
 						}
@@ -250,15 +248,11 @@ impl Recipe
 							};
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 							state = ReadState::InsideTarget;
 						}
@@ -268,12 +262,11 @@ impl Recipe
 								{println!("error: unknown target type '{}' at line {}", x, line_number);}
 							return;
 						}
-					},
-					None => {}
+					}
 				},
-				ReadState::InsideTarget => match tokens.next()
+				ReadState::InsideTarget => if let Some(s) = tokens.next()
 				{
-					Some(s) => match s
+					match s
 					{
 						"end" =>
 						{
@@ -283,15 +276,11 @@ impl Recipe
 							state = ReadState::Start;
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 						},
 						"$refs" =>
@@ -299,15 +288,11 @@ impl Recipe
 							target.options.refs = true;
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 						}
 						"$deps" =>
@@ -315,15 +300,11 @@ impl Recipe
 							target.options.deps = true;
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 						}
 						"$nolibc" =>
@@ -331,15 +312,11 @@ impl Recipe
 							target.options.nolibc = true;
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 						}
 						"$generate-ir" =>
@@ -347,15 +324,11 @@ impl Recipe
 							target.options.generate_ir = true;
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 						}
 						"$generate-c" =>
@@ -363,31 +336,24 @@ impl Recipe
 							target.options.generate_c = true;
 
 							//check for extra tokens
-							match tokens.next()
+							if let Some(s) = tokens.next()
 							{
-								Some(s) =>
-								{
-									if errors
-										{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
-									return;
-								},
-								None => {},
+								if errors
+									{println!("error: unexpected token '{}' at line '{}'", s, line_number);}
+								return;
 							}
 						}
-						"$warnings" => loop
+						"$warnings" => while let Some(p) = tokens.next()
 						{
-							match tokens.next() { Some(p) => target.options.warnings.push(p.to_string()), 
-												  None => break }
+							target.options.warnings.push(p.to_string());
 						},
-						"$export" => loop
+						"$export" => while let Some(p) = tokens.next()
 						{
-						    match tokens.next() { Some(p) => target.options.export.push(p.to_string()),
-						    					  None => break }
+							target.options.export.push(p.to_string());
 						},
-						"$config" => loop
+						"$config" => while let Some(p) = tokens.next()
 						{
-							match tokens.next() { Some(p) => target.options.config.push(p.to_string()), 
-												  None => break }
+							target.options.config.push(p.to_string()); 
 						},
 						"$use" => match tokens.next()
 						{
@@ -461,8 +427,7 @@ impl Recipe
 								return;
 							}
 						}
-					},
-					None => {}
+					}
 				}
 			}
 		}
@@ -478,68 +443,68 @@ impl Recipe
 	{
 		let mut f = File::create(path).unwrap();
 
-		//TODO
-		writeln!(f, "# this file is generated by recipe-reader, it might be overwritten\n");
+		writeln!(f, "# this file is generated by recipe-reader, it might be overwritten\n")
+			.expect("error: failed to write to recipe file");
 		for trg_ptr in &self.targets
 		{
-			let ref trg = *trg_ptr;
+			let trg = &(*trg_ptr);
 			match trg.kind
 			{
-				TargetType::Executable => {writeln!(f, "executable {}", trg.name);},
-				TargetType::SharedLib | TargetType::StaticLib => {writeln!(f, "lib {} {}", trg.name, trg.kind.to_string());},
+				TargetType::Executable => {writeln!(f, "executable {}", trg.name).expect("error: failed to write to recipe file");},
+				TargetType::SharedLib | TargetType::StaticLib => {writeln!(f, "lib {} {}", trg.name, trg.kind.to_string()).expect("error: failed to write to recipe file");},
 				TargetType::Temporary => panic!("error: temporary target type is invalid"),
 			}
 
-			if trg.options.generate_c 	{writeln!(f, "\t$generate-c");}
-			if trg.options.generate_ir 	{writeln!(f, "\t$generate-ir");}
-			if trg.options.nolibc 		{writeln!(f, "\t$nolibc");}
-			if trg.options.deps 		{writeln!(f, "\t$deps");}
-			if trg.options.refs 		{writeln!(f, "\t$refs");}
-			if trg.options.export.len() > 0
+			if trg.options.generate_c 	{writeln!(f, "\t$generate-c").expect("error: failed to write to recipe file");}
+			if trg.options.generate_ir 	{writeln!(f, "\t$generate-ir").expect("error: failed to write to recipe file");}
+			if trg.options.nolibc 		{writeln!(f, "\t$nolibc").expect("error: failed to write to recipe file");}
+			if trg.options.deps 		{writeln!(f, "\t$deps").expect("error: failed to write to recipe file");}
+			if trg.options.refs 		{writeln!(f, "\t$refs").expect("error: failed to write to recipe file");}
+			if !trg.options.export.is_empty()
 			{
-				write!(f, "\t$export");
+				write!(f, "\t$export").expect("error: failed to write to recipe file");
 				for export in &trg.options.export
 				{
-					write!(f, " {}", export);
+					write!(f, " {}", export).expect("error: failed to write to recipe file");
 				}
-				write!(f, "\n");
+				write!(f, "\n").expect("error: failed to write to recipe file");
 			}
-			if trg.options.config.len() > 0
+			if !trg.options.config.is_empty()
 			{
-				write!(f, "\t$config");
+				write!(f, "\t$config").expect("error: failed to write to recipe file");
 				for config in &trg.options.config
 				{
-					write!(f, " {}", config);
+					write!(f, " {}", config).expect("error: failed to write to recipe file");
 				}
-				write!(f, "\n");
+				write!(f, "\n").expect("error: failed to write to recipe file");
 			}
-			if trg.options.warnings.len() > 0
+			if !trg.options.warnings.is_empty()
 			{
-				write!(f, "\t$warnings");
+				write!(f, "\t$warnings").expect("error: failed to write to recipe file");
 				for warning in &trg.options.warnings
 				{
-					write!(f, " {}", warning);
+					write!(f, " {}", warning).expect("error: failed to write to recipe file");
 				}
-				write!(f, "\n");
+				write!(f, "\n").expect("error: failed to write to recipe file");
 			}
-			if trg.options.lib_use.len() > 0
+			if !trg.options.lib_use.is_empty()
 			{
 				for lib_use in &trg.options.lib_use
 				{
-					writeln!(f, "\t$use {} {}", lib_use.0, lib_use.1.to_string());
+					writeln!(f, "\t$use {} {}", lib_use.0, lib_use.1.to_string()).expect("error: failed to write to recipe file");
 				}
 			}
 			for file in &trg.files
 			{
-				writeln!(f, "\t{}", file);
+				writeln!(f, "\t{}", file).expect("error: failed to write to recipe file");
 			}
-			writeln!(f, "end\n");
+			writeln!(f, "end\n").expect("error: failed to write to recipe file");
 		}
 	}
 
 	pub fn chdir(&self)
 	{
-		set_current_dir(Path::new(&self.path));
+		set_current_dir(Path::new(&self.path)).expect("error: failed to chdir");
 	}
 
 	pub fn add_target(&mut self, trg: Target)
@@ -551,23 +516,15 @@ impl Recipe
 
 impl Target
 {
-	fn new() -> Target
-	{
-		Target
-		{
-			name: String::new(),
-			kind: TargetType::Temporary,
-			files: Vec::new(),
-			options: TargetOptions::new()
-		}
-	}
+	fn new() -> Target { Default::default() }
 }
 
 impl TargetOptions
 {
 	pub fn new() -> TargetOptions
 	{
-		TargetOptions
+		Default::default()
+		/*TargetOptions
 		{
 			deps: false,
 			refs: false,
@@ -578,6 +535,6 @@ impl TargetOptions
 			export: Vec::new(),
 			config: Vec::new(),
 			warnings: Vec::new(),
-		}
+		}*/
 	}
 }

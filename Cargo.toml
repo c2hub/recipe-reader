@@ -1,6 +1,6 @@
 [package]
 name = "recipe-reader"
-version = "0.9.9"
+version = "0.9.10"
 authors = ["Lukáš Hozda <luk.hozda@gmail.com>"]
 description = "A reader for recipe files of the C2 language. See c2lang.org for information about C2 lang and specification of the format."
 license = "Fair"

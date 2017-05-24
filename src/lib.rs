@@ -541,6 +541,12 @@ impl Recipe
 	{
 		set_current_dir(Path::new(&self.path));
 	}
+
+	pub fn add_target(&mut self, trg: Target)
+	{
+		self.targets.push(trg);
+		self.target_count += 1;
+	}
 }
 
 impl Target
